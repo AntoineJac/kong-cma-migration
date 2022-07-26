@@ -49,7 +49,7 @@ After the script has finished running you will obtain a Ngrok url that you can t
 
 ### Edit the kubernest Ingress rule
 
-The script will use the yaml config file ```config/hello-ingress.yaml``` to expose the ```hello-service``` service on the ```/hello``` path
+The script will use the yaml config file ```config/hello-ingress.yaml``` to expose the ```hello-service``` service on the ```/hello``` path.
 Feel free to test your new config by editing or copying the file and running:
 
 	$ kubectl apply -n kong -f ./config/hello-ingress.yaml
