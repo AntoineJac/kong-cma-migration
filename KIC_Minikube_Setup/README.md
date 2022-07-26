@@ -25,7 +25,7 @@ consist of the following steps:
 
 1 - Reach the git directory with the shell script:
 
-	$ cd PATH/testK8/KIC_Minikube_Setup 
+	$ cd PATH/KongSamples/KIC_Minikube_Setup 
 
 2 - Run the shell script:
 
@@ -35,7 +35,7 @@ consist of the following steps:
 ## Reach the localhost proxy
 
 	$ curl --location --request GET 'http://127.0.0.1:80/hello' \
-	  --header 'X-TENANT-ID: hellio'
+	  --header 'X-TEST-ID: helloTestId'
 
 
 ### Access the resource on the web with Ngrok
@@ -44,4 +44,4 @@ The script will generate a Minikube cluster and expose your localhost server run
 After the script has finished running you will obtain a Ngrok url that you can then reach on the web:
 
 	$ curl --location --request GET 'http://[NGROK_REMOTE_URL]/hello' \
-	  --header 'X-TENANT-ID: hellio'
+	  --header 'X-TEST-ID: helloTestId'

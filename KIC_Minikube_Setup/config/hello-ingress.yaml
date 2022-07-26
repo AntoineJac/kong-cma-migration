@@ -21,8 +21,8 @@ config:
   functions:
   - |
     local request_method = kong.request.get_method()
-    local request_custom_header = kong.request.get_header('X-TENANT-ID')
-    if request_method ~= 'OPTIONS' and request_custom_header ~= 'hellio' then
+    local request_custom_header = kong.request.get_header('X-TEST-ID')
+    if request_method ~= 'OPTIONS' and request_custom_header ~= 'helloTestId' then
     return kong.response.exit(404)
     end
 plugin: pre-function
