@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloapp
+  namespace: kong
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloapp
+  template:
+    metadata:
+      labels:
+        app: helloapp
+    spec:
+      containers:
+      - name: helloapp
+        image: k8_py_sample:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-service
+  namespace: kong
+  labels:
+    app: helloapp
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 5000
+    name: http
+    targetPort: 5000
+    nodePort: 30007
+  selector:
+    app: helloapp
