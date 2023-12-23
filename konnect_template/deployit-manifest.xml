@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<udm.DeploymentPackage version="DarVersion" application="Digital_Lab/KONG/configuration/kong-dev-konnect-configuration">
+  <orchestrator>
+    <value>sequential-by-deployment-group</value>
+  </orchestrator>
+  <enableAutomaticOrchestrators>false</enableAutomaticOrchestrators>
+  <satisfiesReleaseNotes>false</satisfiesReleaseNotes>
+  <satisfiesPerformanceTested>false</satisfiesPerformanceTested>
+
+  <deployables>
+
+    <!-- KONG SERVICE CONFIGURATION -->
+
+    <konnect.Sync name="/service-demo-konnect-dev-sync">
+      <tags>{{CAMUNDA_SERVICE_NAME}}</tags>
+      <scanPlaceholders>true</scanPlaceholders>
+      <createOrder>60</createOrder>
+      <modifyOrder>60</modifyOrder>
+      <konnectToken>{{KONNECT_TOKEN}}</konnectToken>
+      <konnectAddress>{{KONNECT_ADDRESS}}</konnectAddress>
+      <runtimeGroupName>{{RUNTIME_GROUP_NAME}}</runtimeGroupName>
+      <openApiFileURL>{{CAMUNDA_OPEN_API_FILE_URL}}</openApiFileURL>
+      <konnectFolder>{{KONNECT_CONFIG_FOLDER}}</pluginsFolder>
+    </konnect.Sync>
+
+    <!-- INGRESS -->
+
+    <k8s.ResourcesFile name="/service-proxy-ingress" file="/k8s/resources/ingressRules/kong-proxy-ingress-api.yaml">
+      <tags>konnect-engine</tags>
+      <scanPlaceholders>true</scanPlaceholders>
+      <createOrder>66</createOrder>
+      <modifyOrder>66</modifyOrder>
+    </k8s.ResourcesFile>
+
+  </deployables>
+
+</udm.DeploymentPackage>
