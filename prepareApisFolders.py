@@ -6,7 +6,7 @@ import argparse
 import json
 from lib.convertMule2Kong import convert_to_kong_plugins
 
-def create_folders_from_csv(csv_file, organization_id, environment_id, bearer_token, canary_weight):
+def create_folders_from_csv(csv_file, organization_id, environment_id, bearer_token, canary_weight, production):
     apis_folder_path = os.path.join(os.getcwd(), 'apis')
     os.makedirs(apis_folder_path, exist_ok=True)
 
@@ -19,7 +19,7 @@ def create_folders_from_csv(csv_file, organization_id, environment_id, bearer_to
             api_name = row['apiName']
             print(f"\n{'-'*17} Iteration {iteration} {'-'*17}")
             print(f"> Processing API: {api_name}")
-            result = create_folder(api_name, organization_id, environment_id, bearer_token, apis_folder_path, canary_weight)
+            result = create_folder(api_name, organization_id, environment_id, bearer_token, apis_folder_path, canary_weight, production)
 
             if result.get("status") == "success":
                 successful_apis.append(result)
@@ -28,7 +28,7 @@ def create_folders_from_csv(csv_file, organization_id, environment_id, bearer_to
 
     print_conversion_summary(successful_apis, unsuccessful_apis)
 
-def create_folder(api_name, organization_id, environment_id, bearer_token, apis_folder_path, canary_weight):
+def create_folder(api_name, organization_id, environment_id, bearer_token, apis_folder_path, canary_weight, production):
     folder_path = os.path.join(apis_folder_path, api_name)
     os.makedirs(folder_path, exist_ok=True)
 
@@ -40,7 +40,10 @@ def create_folder(api_name, organization_id, environment_id, bearer_token, apis_
     shutil.copytree(konnect_template_src, konnect_template_dest)
 
     ingress_file_path = os.path.join(konnect_template_dest, 'ingressRules', 'kong-proxy-ingress-api-canary.yaml')
-    update_canary_weight(ingress_file_path, canary_weight)
+    if production:
+        comment_out_canary_lines(ingress_file_path)
+    else:
+        update_canary_weight(ingress_file_path, canary_weight)
 
     download_api_config(api_name, folder_path, organization_id, environment_id, bearer_token)
 
@@ -64,6 +67,17 @@ def update_canary_weight(ingress_file_path, canary_weight):
     with open(ingress_file_path, 'w') as ingress_file:
         ingress_file.write(updated_content)
 
+def comment_out_canary_lines(ingress_file_path):
+    with open(ingress_file_path, 'r') as ingress_file:
+        file_content = ingress_file.read()
+
+    # Comment out canary-related lines
+    commented_content = file_content.replace('nginx.ingress.kubernetes.io/canary: "true"', '# nginx.ingress.kubernetes.io/canary: "true"')
+    commented_content = commented_content.replace('nginx.ingress.kubernetes.io/canary-weight: "1"', '# nginx.ingress.kubernetes.io/canary-weight: "1"')
+
+    with open(ingress_file_path, 'w') as ingress_file:
+        ingress_file.write(commented_content)
+
 def download_api_config(api_name, folder_path, organization_id, environment_id, bearer_token):
     api_config_url = f'https://raw.githubusercontent.com/AntoineJac/kong-cma-migration/{environment_id}/examples/{api_name}.json'
     headers = {}
@@ -80,6 +94,12 @@ def download_api_config(api_name, folder_path, organization_id, environment_id, 
         print(f"> Configuration file for {api_name} downloaded successfully.")
     else:
         print(f"> Failed to download configuration for {api_name}. Status code: {response.status_code}")
+
+def confirm_execution():
+    user_input = input("IMPORTANT: In production the ingress rules will be pushed as main rule.\n" +
+    "Make sure Current canary weight is 100 and Mulesoft is undeployed.\n" +
+    "\nAre you sure you want to continue in production mode? (y/n): ").lower()
+    return user_input == 'y'
 
 def print_conversion_summary(successful_apis, unsuccessful_apis):
     print(f"\n\nSUMMARY:")
@@ -109,6 +129,7 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--file-name', required=True, help='CSV file containing API data')
     parser.add_argument('-e', '--environment', required=True, help='Your environment ID')
     parser.add_argument('-w', '--weight', required=True, help='Canary release weight')
+    parser.add_argument('-p', '--production', action='store_true', help='Specify if in production mode')
 
     args = parser.parse_args()
 
@@ -117,5 +138,14 @@ if __name__ == "__main__":
     canary_weight = args.weight
     organization_id = 'your_organization_id'  # Replace with your actual organization ID
     bearer_token = 'your_bearer_token'  # Replace with your actual Bearer Token
+    production_mode = args.production
 
-    create_folders_from_csv(csv_file_path, organization_id, environment_id, bearer_token, canary_weight)
+    if production_mode:
+        if not confirm_execution():
+            print("\nExecution canceled by user.")
+            exit()
+
+    create_folders_from_csv(csv_file_path, organization_id, environment_id, bearer_token, canary_weight, production_mode)
+
+
+

@@ -10,8 +10,10 @@ pip install .
 
 ### Prepare API folder
 The following script will create an apis folder with all the service from the samples_services.csv file.
-The e parameter is used to specify the environment id.
-The w parameter is used to specify the weight of the ingress rules.
+The -f parameter is used to specify the csv file with Mulesoft APIs name.
+The -e parameter is used to specify the environment id.
+The -w parameter is used to specify the weight of the ingress rules.
+The -p parameter is used to specify if we deploy the Ingress as main rules without Canary.
 
 ```
 python prepareApisFolders.py -f samples_services.csv -e main -w 4
