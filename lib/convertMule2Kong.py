@@ -167,15 +167,18 @@ def convert_to_kong_plugins(json_data, output_folder):
 
     api_policies = json_data.get("policyConfigurations", [])
 
-    print(f"> Conversion completed.\nNumber of Policies: {len(api_policies)}")
-    print(f"Total policies converted: {len(converted_files)}\nNumber of unmapped Policies: {len(unknown_policies)}")
-    print(f"Number of added Plugins: {len(added_files)}\nTotal files created: {len(converted_files + added_files)}")
+    print(f"> Conversion completed:")
+    print(f"      Number of Policies: {len(api_policies)}")
+    print(f"      Total policies converted: {len(converted_files)}")
+    print(f"      Number of unmapped Policies: {len(unknown_policies)}")
+    print(f"      Number of added Plugins: {len(added_files)}")
+    print(f"      Total files created: {len(converted_files + added_files)}")
 
-    print(f"Unmapped policies:")
+    print(f"> Unmapped policies:")
     for file_name in unknown_policies:
         print(f"     {file_name}")
 
-    print(f"Plugins created:")
+    print(f"> Plugins created:")
     for file_name in converted_files + added_files:
         print(f"     {file_name}")
 

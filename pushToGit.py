@@ -50,11 +50,11 @@ def create_git_branch_and_commit(api_folder_path, git_url, iteration, success_li
     except FileNotFoundError as e:
         print(f"ERROR: {e}")
         print(f"ERROR: GIT PUSH WAS NOT SUCCESSFUL FOR THE API {os.path.basename(api_folder_path)}")
-        error_list.append(os.path.basename(api_folder_path))
+        error_list.append({"api": os.path.basename(api_folder_path), "error": str(e)})
     except Exception as e:
         print(f"ERROR: {e}")
         print(f"ERROR: GIT PUSH WAS NOT SUCCESSFUL FOR THE API {os.path.basename(api_folder_path)}")
-        error_list.append(os.path.basename(api_folder_path))
+        error_list.append({"api": os.path.basename(api_folder_path), "error": str(e)})
 
 def main():
     # Specify the base directory where API folders are located
@@ -80,13 +80,16 @@ def main():
             create_git_branch_and_commit(api_folder_path, git_url, i, success_list, error_list)
 
     # Print the lists of successful and unsuccessful APIs
+    print(f"\n\nSUMMARY:")
     print("\n----------------- Successful APIs -----------------")
     for api in success_list:
         print(api)
+        print(f"\n> {api}")
 
     print("\n----------------- Unsuccessful APIs -----------------")
     for api in error_list:
-        print(api)
+        print(f"\n> {api['api']}")
+        print(f"      Error: {api['error']}")
 
 if __name__ == "__main__":
     main()

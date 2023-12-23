@@ -15,9 +15,10 @@ def create_folders_from_csv(csv_file, organization_id, environment_id, bearer_to
 
     with open(csv_file, 'r') as file:
         csv_reader = csv.DictReader(file)
-        for row in csv_reader:
+        for iteration, row in enumerate(csv_reader, start=1):
             api_name = row['apiName']
-            print(f"\nSTART THE CONVERSION OF THE API: {api_name}")
+            print(f"\n{'-'*17} Iteration {iteration} {'-'*17}")
+            print(f"> Processing API: {api_name}")
             result = create_folder(api_name, organization_id, environment_id, bearer_token, apis_folder_path, canary_weight)
 
             if result.get("status") == "success":
@@ -90,7 +91,7 @@ def print_conversion_summary(successful_apis, unsuccessful_apis):
         plugins_added = result["plugins_added"]
         plugins_total = result["plugins_total"]
 
-        print(f"\n{api_name}")
+        print(f"\n> {api_name}")
         print(f"      Policies Count: {policies_count}")
         print(f"      Plugins Converted: {plugins_converted}")
         print(f"      Plugins Added: {plugins_added}")
@@ -100,7 +101,7 @@ def print_conversion_summary(successful_apis, unsuccessful_apis):
     for result in unsuccessful_apis:
         api_name = result["api_id"]
         unknown_policies = result["unknown_policies"]
-        print(f"\n{api_name}")
+        print(f"\n> {api_name}")
         print(F"      Error: Impossible to convert the following policies - check mapping: {unknown_policies}")
 
 if __name__ == "__main__":
