@@ -9,4 +9,8 @@ dependencies = [
 	'requests >= 2.26.0'
 ]
 
+[tool.setuptools]
+include-package-data = false
 
+[tool.setuptools.packages.find]
+exclude = ["lib", "apis", "konnect_template"]
