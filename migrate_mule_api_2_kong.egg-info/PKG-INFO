@@ -1,5 +1,0 @@
-Metadata-Version: 2.1
-Name: migrate-mule-api-2-kong
-Version: 0.1.0
-Summary: Script to create folders and download API configurations
-Requires-Dist: requests>=2.26.0

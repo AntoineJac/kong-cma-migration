@@ -1,7 +1,0 @@
-README.md
-pyproject.toml
-migrate_mule_api_2_kong.egg-info/PKG-INFO
-migrate_mule_api_2_kong.egg-info/SOURCES.txt
-migrate_mule_api_2_kong.egg-info/dependency_links.txt
-migrate_mule_api_2_kong.egg-info/requires.txt
-migrate_mule_api_2_kong.egg-info/top_level.txt
