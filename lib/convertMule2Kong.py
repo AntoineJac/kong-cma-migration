@@ -17,17 +17,50 @@ def extract_scopes_from_mandatory_custom_claims(mandatory_custom_claims):
 
     return scopes
 
+def add_default_plugins(service_name, output_folder):
+    added_files = []
+
+    plugin_config = {
+        "name": "proxy-cache-advanced",
+        "service": service_name,
+        "enabled": False,
+        "config": {
+            "cache_ttl": 300,
+            "storage_ttl": 300,
+            "response_code": [200],
+            "request_method": ["GET", "HEAD"],
+            "content_type": ["text/plain", "application/json", "application/json; charset=utf-8", "text/plain; charset=UTF-8"],
+            "strategy": "redis",
+            "redis": {
+                "cluster_addresses": ["{{KONG_KONNECT_PLUGIN_REDIS_HOST}}:{{KONG_KONNECT_PLUGIN_REDIS_PORT}}"],
+                "ssl": True
+            }
+        }
+    }
+
+    file_name = f'{plugin_config["name"]}.yaml'
+    with open(os.path.join(output_folder, file_name), 'w') as plugin_file:
+        yaml.dump(plugin_config, plugin_file, default_flow_style=False)
+
+    added_files.append(file_name)
+
+    return added_files
+
 def convert_to_kong_plugins(json_data, output_folder):
+    Path(output_folder).mkdir(parents=True, exist_ok=True)
     kong_config = {"_format_version": "3.0", "plugins": []}
-    created_files = []
+    service_name = json_data.get("api", {}).get("$self", {}).get("assetId", "default-service")
+    converted_files = []
+    unknown_policies = []
+
+    added_files = add_default_plugins(service_name, output_folder)
 
     for policy in json_data.get("policyConfigurations", []):
         policy_data = policy.get("$self", {})
         asset_id = policy_data.get("assetId", "")
 
         if asset_id == "rate-limiting":
-            method_regex = ""
-            uri_template_regex = ""
+            method_regex, uri_template_regex = "", ""
 
             if policy_data.get("pointcutData") is not None:
                 for pointcut_data in policy_data["pointcutData"]:
@@ -43,25 +76,24 @@ def convert_to_kong_plugins(json_data, output_folder):
                     "hide_client_headers": True,
                     "strategy": "redis",
                     "sync_rate": 0.1,
-                    "namespace": json_data.get("api", {}).get("$self", {}).get("assetId", "default-service") + "-namespace",
+                    "namespace": f'{service_name}-namespace',
                     "identifier": "consumer",
                     "redis": {
-                      "cluster_addresses":["{{KONG_KONNECT_PLUGIN_REDIS_HOST}}:{{KONG_KONNECT_PLUGIN_REDIS_PORT}}"],
-                      "ssl": True
+                        "cluster_addresses": ["{{KONG_KONNECT_PLUGIN_REDIS_HOST}}:{{KONG_KONNECT_PLUGIN_REDIS_PORT}}"],
+                        "ssl": True
                     }
                 },
                 "enabled": not policy_data.get("disabled", False),
                 "name": "rate-limiting-advanced",
-                "service": json_data.get("api", {}).get("$self", {}).get("assetId", "default-service"),
+                "service": service_name,
             }
 
             if paths:
                 plugin_config["route"] = paths
 
-            kong_config["plugins"].append(plugin_config)
             file_name = f'{plugin_config["name"]}.yaml'
-            created_files.append(file_name)
-            # Write the plugin config to a separate YAML file
+            converted_files.append(file_name)
+
             with open(os.path.join(output_folder, file_name), 'w') as plugin_file:
                 yaml.dump(plugin_config, plugin_file, default_flow_style=False)
 
@@ -69,8 +101,7 @@ def convert_to_kong_plugins(json_data, output_folder):
             mandatory_custom_claims = policy_data.get("configurationData", {}).get("mandatoryCustomClaims", [])
             scopes_required = extract_scopes_from_mandatory_custom_claims(mandatory_custom_claims)
 
-            method_regex = ""
-            uri_template_regex = ""
+            method_regex, uri_template_regex = "", ""
 
             if policy_data.get("pointcutData") is not None:
                 for pointcut_data in policy_data["pointcutData"]:
@@ -90,13 +121,26 @@ def convert_to_kong_plugins(json_data, output_folder):
                 },
                 "enabled": not policy_data.get("disabled", False),
                 "name": "openid-connect",
-                "service": json_data.get("api", {}).get("$self", {}).get("assetId", "default-service"),
+                "service": service_name,
             }
 
-            kong_config["plugins"].append(plugin_config)
             file_name = f'{plugin_config["name"]}.yaml'
-            created_files.append(file_name)
-            # Write the plugin config to a separate YAML file
+            converted_files.append(file_name)
+
+            with open(os.path.join(output_folder, file_name), 'w') as plugin_file:
+                yaml.dump(plugin_config, plugin_file, default_flow_style=False)
+
+        elif asset_id == "basic-auth-simple":
+            plugin_config = {
+                "config": {"hide_credentials": True},
+                "enabled": not policy_data.get("disabled", False),
+                "name": "basic-auth",
+                "service": service_name,
+            }
+
+            file_name = f'{plugin_config["name"]}.yaml'
+            converted_files.append(file_name)
+
             with open(os.path.join(output_folder, file_name), 'w') as plugin_file:
                 yaml.dump(plugin_config, plugin_file, default_flow_style=False)
 
@@ -108,17 +152,44 @@ def convert_to_kong_plugins(json_data, output_folder):
                 },
                 "enabled": not policy_data.get("disabled", False),
                 "name": "mulesoft-mediation",
-                "service": [json_data.get("api", {}).get("$self", {}).get("assetId", "default-service")],
+                "service": service_name,
             }
 
-            kong_config["plugins"].append(plugin_config)
             file_name = f'{plugin_config["name"]}.yaml'
-            created_files.append(file_name)
-            # Write the plugin config to a separate YAML file
+            converted_files.append(file_name)
+
             with open(os.path.join(output_folder, file_name), 'w') as plugin_file:
                 yaml.dump(plugin_config, plugin_file, default_flow_style=False)
 
-    return kong_config, created_files
+        else:
+            print(f"Unknown asset ID: {asset_id}")
+            unknown_policies.append(asset_id)
+
+    api_policies = json_data.get("policyConfigurations", [])
+
+    print(f"> Conversion completed.\nNumber of Policies: {len(api_policies)}")
+    print(f"Total policies converted: {len(converted_files)}\nNumber of unmapped Policies: {len(unknown_policies)}")
+    print(f"Number of added Plugins: {len(added_files)}\nTotal files created: {len(converted_files + added_files)}")
+
+    print(f"Unmapped policies:")
+    for file_name in unknown_policies:
+        print(f"     {file_name}")
+
+    print(f"Plugins created:")
+    for file_name in converted_files + added_files:
+        print(f"     {file_name}")
+
+    result = {
+        "status": "success" if len(converted_files) == len(api_policies) else "failure",
+        "api_id": service_name,
+        "policies_count": len(api_policies),
+        "plugins_converted": len(converted_files),
+        "plugins_added": len(added_files),
+        "plugins_total": len(converted_files + added_files),
+        "unknown_policies": unknown_policies,
+    }
+
+    return result
 
 def main():
     parser = argparse.ArgumentParser(description='Convert JSON to YAML and create plugin files.')
@@ -130,18 +201,28 @@ def main():
     json_file = args.file_name
     output_folder = args.output_folder
 
-    # Ensure the output folder exists
     Path(output_folder).mkdir(parents=True, exist_ok=True)
 
     with open(json_file, 'r') as file:
         json_data = json.load(file)
 
-    kong_config, files_created = convert_to_kong_plugins(json_data, output_folder)
+    result = convert_to_kong_plugins(json_data, output_folder)
 
-    print(f"Conversion completed.\nTotal files created: {len(files_created)}")
+    print_conversion_result(result)
 
-    for file_name in files_created:
-        print(file_name)
+    return result
+
+def print_conversion_result(result):
+    status = result["status"]
+    api_id = result["api_id"]
+    plugins_converted = result["plugins_converted"]
+    policies_count = result["policies_count"]
+
+    if status == "success":
+        print(f"> Successful_api api_id: {api_id}, plugins_converted: {plugins_converted}, policies_count: {policies_count}")
+    else:
+        print(f"> Unsuccessful_api api_id: {api_id}, plugins_converted: {plugins_converted}, policies_count: {policies_count}")
+        print(f"> Error Message: {result['error_message']}")
 
 if __name__ == "__main__":
     main()
