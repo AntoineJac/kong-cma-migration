@@ -1,1 +1,94 @@
-{"api":{"$self":{"name":"1.0.8:1349867","groupId":"8d3ba7c8-5ec7-4dde-bc43-20ddb7f700aa","assetId":"proxy-price-calculation-api","assetVersion":"1.0.8","productVersion":"1.0.8","description":null,"tags":[],"order":1,"providerId":null,"deprecated":false,"endpointUri":null,"instanceLabel":null,"technology":"mule4"}},"endpoint":{"$self":{"type":"raml","uri":"https:///commercial/quotation/v1","proxyUri":null,"isCloudHub":null,"deploymentType":"CH","policiesVersion":null,"referencesUserDomain":null,"responseTimeout":null,"muleVersion4OrAbove":true}},"policyConfigurations":[{"$self":{"policyTemplateId":"2096865","groupId":"e0b4a150-f59b-46d4-ad25-5d98f9deb24a","assetId":"rate-limiting","assetVersion":"1.3.6","configurationData":{"rateLimits":[{"maximumRequests":1000,"timePeriodInMilliseconds":60000}],"clusterizable":true,"exposeHeaders":true},"pointcutData":[{"methodRegex":"GET","uriTemplateRegex":"/offers/search"}],"disabled":false,"order":1}},{"$self":{"policyTemplateId":"2096865","groupId":"e0b4a150-f59b-46d4-ad25-5d98f9deb24a","assetId":"rate-limiting","assetVersion":"1.3.6","configurationData":{"rateLimits":[{"maximumRequests":2250,"timePeriodInMilliseconds":60000}],"clusterizable":true,"exposeHeaders":true},"pointcutData":[{"methodRegex":"GET","uriTemplateRegex":"/offers/.*"}],"disabled":false,"order":2}}],"upstreams":{"68516e91-cc96-47c5-89d7-7429c5d4b8e4":{"$self":{"uri":"https:///commercial/quotation/v1","label":null}}}}
+{
+    "api": {
+      "$self": {
+        "name": "1.0.8:1349867",
+        "groupId": "8d3ba7c8-5ec7-4dde-bc43-20ddb7f700aa",
+        "assetId": "proxy-price-calculation-api",
+        "assetVersion": "1.0.8",
+        "productVersion": "1.0.8",
+        "description": null,
+        "tags": [],
+        "order": 1,
+        "providerId": null,
+        "deprecated": false,
+        "endpointUri": null,
+        "instanceLabel": null,
+        "technology": "mule4"
+      }
+    },
+    "endpoint": {
+      "$self": {
+        "type": "raml",
+        "uri": "https:///commercial/quotation/v1",
+        "proxyUri": null,
+        "isCloudHub": null,
+        "deploymentType": "CH",
+        "policiesVersion": null,
+        "referencesUserDomain": null,
+        "responseTimeout": null,
+        "muleVersion4OrAbove": true
+      }
+    },
+    "policyConfigurations": [
+      {
+        "$self": {
+          "policyTemplateId": "2096865",
+          "groupId": "e0b4a150-f59b-46d4-ad25-5d98f9deb24a",
+          "assetId": "rate-limiting",
+          "assetVersion": "1.3.6",
+          "configurationData": {
+            "rateLimits": [
+              {
+                "maximumRequests": 1000,
+                "timePeriodInMilliseconds": 60000
+              }
+            ],
+            "clusterizable": true,
+            "exposeHeaders": true
+          },
+          "pointcutData": [
+            {
+              "methodRegex": "GET",
+              "uriTemplateRegex": "/offers/search"
+            }
+          ],
+          "disabled": false,
+          "order": 1
+        }
+      },
+      {
+        "$self": {
+          "policyTemplateId": "2096865",
+          "groupId": "e0b4a150-f59b-46d4-ad25-5d98f9deb24a",
+          "assetId": "rate-limiting",
+          "assetVersion": "1.3.6",
+          "configurationData": {
+            "rateLimits": [
+              {
+                "maximumRequests": 2250,
+                "timePeriodInMilliseconds": 60000
+              }
+            ],
+            "clusterizable": true,
+            "exposeHeaders": true
+          },
+          "pointcutData": [
+            {
+              "methodRegex": "GET",
+              "uriTemplateRegex": "/offers/.*"
+            }
+          ],
+          "disabled": false,
+          "order": 2
+        }
+      }
+    ],
+    "upstreams": {
+      "68516e91-cc96-47c5-89d7-7429c5d4b8e4": {
+        "$self": {
+          "uri": "https:///commercial/quotation/v1",
+          "label": null
+        }
+      }
+    }
+  }

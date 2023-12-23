@@ -1,1 +1,72 @@
-{"api":{"$self":{"name":"v1:1609221","groupId":"8d3ba7c8-5ec7-4dde-bc43-20ddb7f700aa","assetId":"experience-wave4-backoffice-api","assetVersion":"1.0.0","productVersion":"v1","description":null,"tags":[],"order":1,"providerId":null,"deprecated":false,"endpointUri":null,"instanceLabel":null,"technology":"mule4"}},"endpoint":{"$self":{"type":"wsdl","uri":null,"proxyUri":null,"isCloudHub":true,"deploymentType":"CH","policiesVersion":null,"referencesUserDomain":null,"responseTimeout":null,"muleVersion4OrAbove":true}},"policyConfigurations":[{"$self":{"policyTemplateId":"2097290","groupId":"e0b4a150-f59b-46d4-ad25-5d98f9deb24a","assetId":"client-id-enforcement","assetVersion":"1.3.2","configurationData":{"credentialsOriginHasHttpBasicAuthenticationHeader":"customExpression","clientIdExpression":"#[attributes.headers['username']]","clientSecretExpression":"#[attributes.headers['password']]"},"pointcutData":null,"disabled":false,"order":1}},{"$self":{"policyTemplateId":"2098079","groupId":"e0b4a150-f59b-46d4-ad25-5d98f9deb24a","assetId":"rate-limiting","assetVersion":"1.3.7","configurationData":{"rateLimits":[{"maximumRequests":2000,"timePeriodInMilliseconds":60000}],"clusterizable":true,"exposeHeaders":false},"pointcutData":null,"disabled":false,"order":2}}],"upstreams":{}}
+{
+    "api": {
+      "$self": {
+        "name": "v1:1609221",
+        "groupId": "8d3ba7c8-5ec7-4dde-bc43-20ddb7f700aa",
+        "assetId": "experience-wave4-backoffice-api",
+        "assetVersion": "1.0.0",
+        "productVersion": "v1",
+        "description": null,
+        "tags": [],
+        "order": 1,
+        "providerId": null,
+        "deprecated": false,
+        "endpointUri": null,
+        "instanceLabel": null,
+        "technology": "mule4"
+      }
+    },
+    "endpoint": {
+      "$self": {
+        "type": "wsdl",
+        "uri": null,
+        "proxyUri": null,
+        "isCloudHub": true,
+        "deploymentType": "CH",
+        "policiesVersion": null,
+        "referencesUserDomain": null,
+        "responseTimeout": null,
+        "muleVersion4OrAbove": true
+      }
+    },
+    "policyConfigurations": [
+      {
+        "$self": {
+          "policyTemplateId": "2097290",
+          "groupId": "e0b4a150-f59b-46d4-ad25-5d98f9deb24a",
+          "assetId": "client-id-enforcement",
+          "assetVersion": "1.3.2",
+          "configurationData": {
+            "credentialsOriginHasHttpBasicAuthenticationHeader": "customExpression",
+            "clientIdExpression": "#[attributes.headers['username']]",
+            "clientSecretExpression": "#[attributes.headers['password']]"
+          },
+          "pointcutData": null,
+          "disabled": false,
+          "order": 1
+        }
+      },
+      {
+        "$self": {
+          "policyTemplateId": "2098079",
+          "groupId": "e0b4a150-f59b-46d4-ad25-5d98f9deb24a",
+          "assetId": "rate-limiting",
+          "assetVersion": "1.3.7",
+          "configurationData": {
+            "rateLimits": [
+              {
+                "maximumRequests": 2000,
+                "timePeriodInMilliseconds": 60000
+              }
+            ],
+            "clusterizable": true,
+            "exposeHeaders": false
+          },
+          "pointcutData": null,
+          "disabled": false,
+          "order": 2
+        }
+      }
+    ],
+    "upstreams": {}
+  }
