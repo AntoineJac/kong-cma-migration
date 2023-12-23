@@ -1,2 +1,10 @@
-/apis/*
+# Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.pyc
 
+# Project specific
+migrate_mule_api_2_kong.egg-info/
+/apis/*
