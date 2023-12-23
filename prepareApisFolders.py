@@ -79,13 +79,13 @@ def comment_out_canary_lines(ingress_file_path):
         ingress_file.write(commented_content)
 
 def download_api_config(api_name, folder_path, organization_id, environment_id, bearer_token):
-    api_config_url = f'https://raw.githubusercontent.com/AntoineJac/kong-cma-migration/{environment_id}/examples/{api_name}.json'
+    api_config_base_url = f'https://raw.githubusercontent.com/AntoineJac/kong-cma-migration/{environment_id}/examples/{api_name}.json'
     headers = {}
 
     #https://anypoint.mulesoft.com/apimanager/api/v1/organizations/{organization_id}/environments/{environment_id}/apis/{api_name}/config
     # {'Authorization': f'Bearer {bearer_token}'}
 
-    response = requests.get(api_config_url, headers=headers)
+    response = requests.get(api_config_base_url, headers=headers)
 
     if response.status_code == 200:
         config_file_path = os.path.join(folder_path, f'{api_name}_config.json')

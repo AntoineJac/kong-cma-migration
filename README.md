@@ -19,6 +19,12 @@ The following script will create an apis folder with all the service from the sa
 python prepareApisFolders.py -f samples_services.csv -e main -w 4
 ```
 
+You will need to:
+- retrieve a bearer_token for accessing CMA apis
+- replace the organization_id and bearer in the script
+- use the correct api_config_base_url in the script
+
+
 ### Push the API changes
 You can then use the pushToGit.py script to push the changes to a new kong_canary_release branches.
 ```
@@ -26,7 +32,7 @@ python pushToGit.py
 ```
 
 You will need to:
-- retrieve a bearer_token for accessing CMA apis
-- uncomment line 61 and 63 in the prepareApisFolders.py script
-- use correct organization_id and bearer line 93 and 94
+- check that you have the right to access CMA repository
+- replace the git_base_url in the script
+
 
