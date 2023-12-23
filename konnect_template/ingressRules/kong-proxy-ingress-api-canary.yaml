@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my.name-{{KONG_KONNECT_ENV}}-kong-konnect-proxy-ingress-canary
+  namespace: {{KONG_KONNECT_APP_NAMESPACE}}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: {{KONG_KONNECT_PROXY_INGRESS_MAX_BODY_SIZE}}
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # CANARY RELEASE FOR KONG UPGRADE
+    # Test with canary by header: Api-Test-Canary:true
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "1"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header hip-gateway-{{KONG_KONNECT_ENV}} true;
+      proxy_set_header cma-source hip;
+      more_clear_headers "via";
+      more_clear_headers "x-kong-upstream-latency";
+      more_clear_headers "x-kong-proxy-latency";
+      more_clear_headers "cma-*";
+  labels:
+    environment: {{KONG_KONNECT_ENV}}
+spec:
+  ingressClassName: {{APP_K8S_INGRESS_CLASSNAME}}
+  rules:
+    - host: {{APP_K8S_INGRESS_HOST}}
+      http:
+        paths:
+          - path: my.ingress.basepath(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: kong-konnect-proxy-service-canary
+                port:
+                  number: {{KONG_KONNECT_SERVICE_PORT}}

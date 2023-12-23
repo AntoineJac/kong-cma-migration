@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+
+[project]
+name = "migrate-mule-api-2-kong"
+version = "0.1.0"
+description = "Script to create folders and download API configurations"
+dependencies = [
+	'requests >= 2.26.0'
+]
+
+

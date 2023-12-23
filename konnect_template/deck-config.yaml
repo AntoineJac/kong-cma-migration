@@ -1,0 +1,3 @@
+konnect-token: {{KONG_KONNECT_TOKEN}}
+konnect-addr: {{KONG_KONNECT_ADDRESS}}
+konnect-runtime-group-name: {{KONG_KONNECT_RUNTIME_GROUP_NAME}}
